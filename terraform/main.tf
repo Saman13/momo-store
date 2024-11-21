@@ -75,7 +75,7 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
         subnet_id = yandex_vpc_subnet.k8s-subnet.id
     }
 
-    version = "1.24"
+    version = "1.30"
     public_ip = true
   }
 }
@@ -83,7 +83,7 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
 resource "yandex_kubernetes_node_group" "k8s-node-group" {
 
     name = "k8s-node-group"
-    version = "1.24"
+    version = "1.30"
     cluster_id = yandex_kubernetes_cluster.k8s-cluster.id
 
     instance_template {
