@@ -13,12 +13,22 @@
 ### Установка кластера
 1) Создать сервисный аккаунт с ролью editor
 2) Получить статический ключ доступа (access_key и secret_key) см. [инструкцию](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account)
-3) Создать бакет с ограниченным доступом для хранения состояния terraform.
-4) Присвоить значения переменным в файле backend.tf
+
+Для генерации ключей:
 ```
 yc iam access-key create \
   --service-account-id <идентификатор_сервисного_аккаунта>
 ```
+Если нужно сгенерировать ключ повторно
+Если вы забыли ACCESS_KEY или SECRET_KEY, создайте новый с помощью той же команды yc iam access-key create. Старые ключи можно удалить при необходимости:
+
+```
+yc iam access-key list --service-account-id <идентификатор_сервисного_аккаунта>
+yc iam access-key deactivate <идентификатор_ключа>
+yc iam access-key delete <идентификатор_ключа>
+```
+3) Создать бакет с ограниченным доступом для хранения состояния terraform.
+4) Присвоить значения переменным в файле backend.tf
 ```
 endpoint = "storage.yandexcloud.net"
 bucket = "<имя_файла_состояния>"
