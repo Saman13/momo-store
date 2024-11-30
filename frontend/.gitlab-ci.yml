@@ -1,0 +1,83 @@
+variables:
+  VERSION: 1.0.${CI_PIPELINE_ID}
+
+include:
+  - project: 'templates/ci'
+    file: 'DockerInDockerTemplate.yml'  
+
+stages:
+  - test
+  - build
+  - container-release
+  - notify
+  - helm-release
+  - deploy
+
+sonarqube-sast:
+  stage: test
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - cd frontend
+    - >
+      sonar-scanner
+      -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONT}
+      -Dsonar.host.url=${SONARQUBE_URL}
+      -Dsonar.login=${SONAR_LOGIN} 
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.projectName=30_ANDREYFEDOTOV_MOMO_FRONT
+
+build:
+  stage: build
+  image: docker:20.10.12-dind-rootless
+  needs:
+    - sonarqube-sast
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd frontend
+    - >
+      docker build
+      --build-arg VERSION=$VERSION
+      --tag $CI_REGISTRY_IMAGE/momo-frontend:$VERSION
+      .
+    - docker push $CI_REGISTRY_IMAGE/momo-frontend:$VERSION
+
+release-frontend-container:
+  variables:
+    GIT_STRATEGY: none
+  image: docker:20.10.12-dind-rootless
+  stage: container-release
+  needs:
+    - build
+    - sonarqube-sast
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/momo-frontend:$VERSION
+    - docker tag $CI_REGISTRY_IMAGE/momo-frontend:$VERSION $CI_REGISTRY_IMAGE/momo-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/momo-frontend:latest
+
+release-helm-chart:
+  stage: helm-release
+  image: alpine/helm:latest
+  script:
+    - sed -i "s/{{TAG}}/$VERSION/" helm/frontend/values.yaml
+    - sed -i "s/{{VERSION}}/$VERSION/" helm/frontend/Chart.yaml
+    - helm package helm/frontend --version ${VERSION}
+    - curl -u ${NEXUS_HELM_USER}:${NEXUS_HELM_PASS} ${NEXUS_HELM_REPO_FRONTEND} --upload-file frontend-${VERSION}.tgz
+
+install-helm-chart:
+  variables:
+    GIT_STRATEGY: none
+  stage: deploy
+  image: alpine/helm:latest
+  before_script:
+    - mkdir ~/.kube
+    - echo "${KUBE_CONFIG}" | base64 -d > ~/.kube/config
+    - chmod go-r ~/.kube/config
+  script:
+    - helm repo add nexus ${NEXUS_HELM_REPO_FRONTEND} --username ${NEXUS_HELM_USER} --password ${NEXUS_HELM_PASS}
+    - helm repo update
+    - helm upgrade frontend nexus/frontend -i --set image.tag=$VERSION --atomic --namespace default
