@@ -1,0 +1,12 @@
+image:
+  repository: gitlab.praktikum-services.ru:5050/std-030-13/momo-store/momo-backend
+  pullPolicy: Always
+  tag: {{TAG}}
+replicas: 2
+revisionHistoryLimit: 15
+strategy:
+  type: RollingUpdate
+rollingUpdate:
+  maxUnavailable: 2
+  maxSurge: 20%
+containerPort: 8081
