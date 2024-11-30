@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: backend 
+description: Backend Momo Store Helm Chart
+type: application
+version: {{VERSION}}
+appVersion: {{VERSION}}
