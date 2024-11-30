@@ -1,0 +1,97 @@
+variables:
+  VERSION: 1.0.${CI_PIPELINE_ID}
+
+include:
+  - project: 'templates/ci'
+    file: 'DockerInDockerTemplate.yml'  
+
+stages:
+  - test
+  - build
+  - container-release
+  - notify
+  - helm-release
+  - deploy
+
+sonarqube-sast:
+  stage: test
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: "0"
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd backend
+    - >
+      sonar-scanner
+      -Dsonar.projectKey=${SONAR_PROJECT_KEY_BACK}
+      -Dsonar.host.url=${SONARQUBE_URL}
+      -Dsonar.login=${SONAR_LOGIN}
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.projectName=30_ANDREYFEDOTOV_MOMO_BACKEND
+
+test-go:
+  stage: test
+  image: golang:alpine3.18
+  script:
+    - cd backend
+    - go test -v ./...
+
+build:
+  stage: build
+  image: docker:20.10.12-dind-rootless
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd backend
+    - >
+      docker build
+      --build-arg VERSION=$VERSION
+      --tag $CI_REGISTRY_IMAGE/momo-backend:$VERSION
+      .
+    - docker push $CI_REGISTRY_IMAGE/momo-backend:$VERSION
+
+release-backend-container:
+  stage: container-release
+  image: docker:24.0.6-alpine3.18
+  needs:
+    - build
+    - sonarqube-sast
+    - test-go
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/momo-backend:$VERSION
+    - docker tag $CI_REGISTRY_IMAGE/momo-backend:$VERSION $CI_REGISTRY_IMAGE/momo-backend:latest
+    - docker push $CI_REGISTRY_IMAGE/momo-backend:latest
+
+release-helm-chart:
+  stage: helm-release
+  image: alpine/helm:latest
+  script:
+    - sed -i "s/{{DOCKER_CONFIG_JSON}}/$DOCKER_CONFIG_JSON/" helm/backend/templates/secrets.yaml
+    - sed -i "s/{{TAG}}/$VERSION/" helm/backend/values.yaml
+    - sed -i "s/{{VERSION}}/$VERSION/" helm/backend/Chart.yaml
+    - helm package helm/backend --version ${VERSION}
+    - curl -u ${NEXUS_HELM_USER}:${NEXUS_HELM_PASS} ${NEXUS_HELM_REPO_BACKEND} --upload-file backend-${VERSION}.tgz
+
+install-helm-chart:
+  variables:
+    GIT_STRATEGY: none
+  stage: deploy
+  image: alpine/helm:latest
+  before_script:
+    - mkdir ~/.kube
+    - echo "${KUBE_CONFIG}" | base64 -d > ~/.kube/config
+    - chmod go-r ~/.kube/config
+  script:
+    - helm repo add nexus ${NEXUS_HELM_REPO_BACKEND} --username ${NEXUS_HELM_USER} --password ${NEXUS_HELM_PASS}
+    - helm repo update
+    - helm upgrade backend nexus/backend -i --set image.tag=$VERSION --atomic --namespace default
