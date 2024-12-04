@@ -1,13 +1,15 @@
 FROM node:18 AS builder
-WORKDIR /app
-COPY package*.json ./
+ENV NODE_ENV=dev \
+    VUE_APP_API_URL=http://saman-store.ru:8081
+WORKDIR /usr/src/app
+COPY ./package*.json ./
 RUN npm install
 COPY . .
-ENV NODE_ENV=production \
-    VUE_APP_API_URL=http://localhost:8081
+
 RUN npm run build
 
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
+FROM nginx:stable
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
