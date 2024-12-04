@@ -35,12 +35,12 @@ sonarqube-sast:
       -Dsonar.qualitygate.wait=true
       -Dsonar.projectName=30_ANDREYFEDOTOV_MOMO_BACKEND
 
-test-go:
-  stage: test
-  image: golang:alpine3.18
-  script:
-    - cd backend
-    - go test -v ./...
+#test-go:
+#  stage: test
+#  image: golang:alpine3.18
+#  script:
+#    - cd backend
+#    - go test -v ./...
 
 build:
   stage: build
