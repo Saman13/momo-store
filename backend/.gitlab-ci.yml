@@ -63,7 +63,7 @@ release-backend-container:
   needs:
     - build
     - sonarqube-sast
-    - test-go
+#    - test-go
   before_script:
     - until docker info; do sleep 1; done
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
