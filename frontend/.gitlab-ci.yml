@@ -81,4 +81,3 @@ install-helm-chart:
     - helm repo add nexus ${NEXUS_HELM_REPO_FRONTEND} --username ${NEXUS_HELM_USER} --password ${NEXUS_HELM_PASS}
     - helm repo update
     - helm upgrade frontend nexus/frontend -i --set image.tag=$VERSION --atomic --namespace default
-    -
