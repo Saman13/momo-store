@@ -1,0 +1,10 @@
+image:
+  repository: gitlab.praktikum-services.ru:5050/std-030-013/momo-store/momo-frontend
+  pullPolicy: Always
+  tag: {{TAG}}
+replicas: 1
+revisionHistoryLimit: 15
+strategy:
+  type: RollingUpdate
+containerPort: 80
+host: saman-store.ru
