@@ -1,4 +1,4 @@
-FROM node:18 AS builder
+FROM node:16.17.0 as builder
 ENV NODE_ENV=dev \
     VUE_APP_API_URL=http://saman-store.ru:8081
 WORKDIR /usr/src/app
