@@ -7,7 +7,7 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: {{ .Values.containerPort }}
       protocol: TCP
