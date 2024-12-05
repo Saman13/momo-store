@@ -104,7 +104,7 @@ func NewFakeDumplingsStore() (dumplings.Store, error) {
 			Name:        "Равиоли",
 			Description: "С рикоттой",
 			Price:       2.90,
-			Image:       "https://storage.yandexcloud.net/picture-saman-store/32cc88a33c3243a6a8838c034878c564.jp",
+			Image:       "https://storage.yandexcloud.net/picture-saman-store/32cc88a33c3243a6a8838c034878c564.jpg",
 		},
 	}
 
