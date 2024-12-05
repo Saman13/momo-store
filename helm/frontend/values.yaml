@@ -1,5 +1,5 @@
 image:
-  repository: gitlab.praktikum-services.ru:5050/std-030-013/momo-store/momo-frontend
+  repository: gitlab.praktikum-services.ru:5050/std-030-13/momo-store/momo-frontend
   pullPolicy: Always
   tag: {{TAG}}
 replicas: 1
