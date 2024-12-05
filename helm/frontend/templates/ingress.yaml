@@ -5,9 +5,9 @@ metadata:
   name: {{ .Chart.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - {{ .Values.host }}
