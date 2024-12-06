@@ -20,6 +20,6 @@ data:
         }
 
         location /api/ {
-            proxy_pass http://myproxy/;
+            proxy_pass http://myproxy;
         }
     }
