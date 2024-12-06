@@ -116,8 +116,8 @@ kubectl get pods -n cert-manager --watch
 Публиковать приложение можно двумя способами:
 - Использовать Kubernetes-манифесты, выполнив команды
 ```
-kubectl apply -f kubernetes/backend
-kubectl apply -f kubernetes/frontend
+kubectl apply -f K8s/backend
+kubectl apply -f K8s/frontend
 ```
 - Использовать практику CI/CD
 
