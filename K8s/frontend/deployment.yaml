@@ -54,4 +54,5 @@ spec:
           name: nginx-conf
           items:
           - key: nginx.conf
-            path: default.conf
+#            path: default.conf
+            path: nginx.conf
