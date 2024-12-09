@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gitlab.praktikum-services.ru:5050/std-017-006/momo-store/momo-frontend:latest
+        image: gitlab.praktikum-services.ru:5050/std-030-13/momo-store/momo-frontend:latest
         imagePullPolicy: Always
         resources:
           requests:
