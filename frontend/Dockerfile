@@ -1,6 +1,6 @@
 # build
 FROM node:16.17.0 as builder
-ARG VUE_APP_API_URL=https://kyn07c0.ru/api
+ARG VUE_APP_API_URL=https://saman-store.ru/api
 ARG NODE_ENV=dev
 WORKDIR /usr/src/app
 COPY ./package*.json ./
