@@ -5,6 +5,11 @@ metadata:
   namespace: default
 data:
   nginx.conf: |
+    worker_processes auto;
+
+    events {
+        worker_connections 1024;
+    }
     http {
         upstream myproxy {
             server backend:8081;
