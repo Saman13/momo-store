@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,27 +6,20 @@ metadata:
   namespace: default
 data:
   nginx.conf: |
-    worker_processes auto;
-
-    events {
-        worker_connections 1024;
+    upstream myproxy {
+      server backend:8081;
     }
-    http {
-        upstream myproxy {
-            server backend:8081;
+
+    server {
+        listen 80;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html;
+            try_files $uri $uri/ /index.html;
         }
 
-        server {
-            listen 80;
-
-            location / {
-                root   /usr/share/nginx/html;
-                index  index.html;
-                try_files $uri $uri/ /index.html;
-            }
-
-            location /api/ {
-                proxy_pass http://myproxy/;
-            }
+        location /api/ {
+            proxy_pass http://myproxy/;
         }
-    }
+    } 
