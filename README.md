@@ -1,3 +1,4 @@
+![img_1.png](img_1.png)
 ## Описание проекта
 Репозиторий содержит код, который позволяет развернуть в облаке Yandex.Cloude учебный проект "Пельменная". 
 Интернет-магазин "Пельменная" состоит из бэкенда и фронтенда.
@@ -187,3 +188,5 @@ helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 helm install --atomic loki grafana/loki-stack
 ```
+
+![img.png](img.png)
