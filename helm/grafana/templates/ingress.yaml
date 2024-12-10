@@ -15,7 +15,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.host }}
-      secretName: prometheus-tls
+      secretName: grafana-tls
   rules:
   - host: {{ .Values.host }}
     http:
