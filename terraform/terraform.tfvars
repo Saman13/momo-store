@@ -1,5 +1,5 @@
 cloud_id = "b1gajabcd2haeihfgqvc"
 folder_id = "b1gstpffcvmgct853p1h"
-token = "y0_AgAAAAAHDLShAATuwQAAAAEJ-PT-AACLpmyZEBxGwoc5UzMdeUpNbRokDQ"
+token = ""
 zone_name = "ru-central1-a"
 domain = "saman-store.ru"

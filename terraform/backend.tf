@@ -4,8 +4,8 @@ terraform {
   bucket = "terraform-state-saman"
   region = "ru-central1"
   key = "bucket/terraform.tfstate"
-  access_key = "YCAJEimMzGGGkBokFymyzDSsG"
-  secret_key = "YCPzMLwbQTwJXtHlG_kdvJzrRB3ZXqKCVt53TyxO"
+  access_key = ""
+  secret_key = ""
   skip_region_validation = true
   skip_credentials_validation = true
   }
